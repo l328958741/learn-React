@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>高阶组件就是一个函数</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/babel">
+        function setUsername(){
+            localStorage.setItem('username', '今天天气号')
+        }
+
+        function setContent(){
+            localStorage.setItem('content', 'ha哈好，我要出去跑一万米')
+        }
+        
+        setUsername()
+        setContent()
+        
+        function WrappedComponent(Component, name) {
+            return class NewComponent extends React.Component {
+                constructor() {
+                    super()
+                    this.state = {data: null}
+                }
+
+                componentWillMount(){
+                    let data = localStorage.getItem(name)
+                    this.setState({data: data})
+                }
+
+                render(){
+                    return <Component data={this.state.data} />
+                }
+            }
+        }
+
+        class InputWithUsername extends React.Component {
+            render(){
+                return (
+                <div>
+                    <span>用户名：</span>
+                    <input value={this.props.data} />
+                </div>
+            )
+            }
+        }
+
+        class TextareaWithContent extends React.Component {
+            render(){
+                return (
+                    <div>
+                        <span>评论内容：</span><br />
+                        <textarea value={this.props.data} />
+                    </div>
+                )
+            }
+        }
+
+        
+        const InputWithUsername1 = WrappedComponent(InputWithUsername, 'username') 
+        const TextareaWithContent1 = WrappedComponent(TextareaWithContent, 'content')      
+
+        class Index extends React.Component {
+            render(){
+                return (
+                    <div>
+                        <InputWithUsername1 />
+                        <TextareaWithContent1 />
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <Index />,
+            document.getElementById('app')
+        )
+    </script>
+  </body>
+</html>

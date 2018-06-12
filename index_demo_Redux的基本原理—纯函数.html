@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redux的基本原理1</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="title"></div>
+    <div id="content"></div>
+    <script type="text/babel">
+        const appState = {
+            title: {
+                text: 'React.js 小书',
+                color: 'red',
+            },
+            content: {
+                text: '这是书的内容',
+                color: 'green'
+            }
+        }
+
+        function renderApp(appState) {
+            renderTitle(appState.title)
+            renderContent(appState.content)
+        }
+
+        function renderTitle(title){
+            const oT = document.getElementById('title')
+            oT.innerHTML = title.text
+            oT.style.color = title.color
+        }
+
+        function renderContent(content){
+            const oC = document.getElementById('content')
+            oC.innerHTML = content.text
+            oC.style.color = content.color
+        }
+
+        function dispatch(state, action){
+            switch (action.type) {
+                case 'update_title_text':
+                    state.title.text = action.text
+                    break;
+                case 'update_title_color':
+                    state.title.color = action.color
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function createStore(state, stateChanger){
+            const listeners = []
+            const subscribe = (listener) => {
+                listeners.push(listener)
+            }
+            const getState = () => state
+            const dispatch = (action) => {
+                stateChanger(state, action)
+                listeners.forEach((listener) => listener())
+            }
+
+            return { getState, dispatch, subscribe }
+        }
+
+        const store = createStore(appState, dispatch)
+        store.subscribe(() => renderApp(store.getState()))
+
+        renderApp(store.getState())
+        // dispatch({type:'update_title_text', text: '《React.js 小书》'})
+        // dispatch({type: 'update_title_color', color: 'blue'})
+        store.dispatch({type:'update_title_text', text: '《React.js 小书》-核心概念1'})
+        store.dispatch({type: 'update_title_color', color: 'black'})
+        
+    </script>
+  </body>
+</html>

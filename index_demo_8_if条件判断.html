@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/babel">
+        class LoginControl extends React.Component {
+            constructor(...args) {
+                super(...args)
+
+                this.handleloginButton = this.handleloginButton.bind(this);
+                this.handlelogoutButton = this.handlelogoutButton.bind(this);
+                this.state = {isLogin: false}
+            }
+
+            handleloginButton(){
+                this.setState({isLogin: true});
+            }
+
+            handlelogoutButton(){
+                this.setState({isLogin: false});
+            }
+
+            render(){
+                const isLogin = this.state.isLogin;
+
+                let button = null;
+
+                if(isLogin){
+                    button = <LogoutButton onClick={this.handlelogoutButton} />
+                }else{
+                    button = <LoginButton onClick={this.handleloginButton} /> 
+                }
+
+                return (
+                    <div>
+                        <Greeting isLogin={isLogin} />
+                        <div>{button}</div>
+                    </div>
+                )
+            }
+        }
+
+        function LoginButton(props){
+            return <button onClick={props.onClick}>登录</button>
+        }
+
+        function LogoutButton(props){
+            return <button onClick={props.onClick}>退出登录</button>
+        }
+
+        function WelcomeLogin() {
+            return <div>欢迎登录</div>
+        }
+
+        function GuestGreeting(){
+            return <div>欢迎回来</div>
+        }
+
+        function Greeting(props){
+            let isLogin = props.isLogin;
+
+            if(isLogin){
+                return <GuestGreeting />
+            }
+
+            return <WelcomeLogin />
+        }
+
+        ReactDOM.render(
+            <LoginControl />,
+            document.getElementById('app')
+        )
+           
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redux的基本原理1</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="title"></div>
+    <div id="content"></div>
+    <script type="text/babel">
+        const appState = {
+            title: {
+                text: 'React.js 小书',
+                color: 'red',
+            },
+            content: {
+                text: '这是书的内容',
+                color: 'green'
+            }
+        }
+
+        function renderApp(newAppState, oldAppState={}) {
+            if(newAppState === oldAppState) return
+            renderTitle(newAppState.title, oldAppState.title)
+            renderContent(newAppState.content, oldAppState.content)
+        }
+
+        function renderTitle(newTitle, oldTitle = {}){
+            if(newTitle === oldTitle) return
+            const oT = document.getElementById('title')
+            oT.innerHTML = newTitle.text
+            oT.style.color = newTitle.color
+        }
+
+        function renderContent(newContent, oldContent={}){
+            if(newContent === oldContent) return
+            const oC = document.getElementById('content')
+            oC.innerHTML = newContent.text
+            oC.style.color = newContent.color
+        }
+
+        function dispatch(state, action){
+            switch (action.type) {
+                case 'update_title_text':
+                    return {
+                        ...state,
+                        title: {
+                            ...state.title,
+                            text: action.text
+                        }
+                    }
+                case 'update_title_color':
+                    return {
+                        ...state,
+                        title: {
+                            ...state.title,
+                            color: action.color
+                        }
+                    }
+                default:
+                    return state
+            }
+        }
+
+        function createStore(state, stateChanger){
+            const listeners = []
+            const subscribe = (listener) => {
+                listeners.push(listener)
+            }
+            const getState = () => state
+            const dispatch = (action) => {
+                state = stateChanger(state, action)
+                listeners.forEach((listener) => listener())
+            }
+
+            return { getState, dispatch, subscribe }
+        }
+
+        const store = createStore(appState, dispatch)
+        let oldState = store.getState()
+        store.subscribe(() => {
+            const newState = store.getState()
+            renderApp(newState, oldState)
+            oldState = newState
+        })
+
+        renderApp(store.getState())
+        // dispatch({type:'update_title_text', text: '《React.js 小书》'})
+        // dispatch({type: 'update_title_color', color: 'blue'})
+        store.dispatch({type:'update_title_text', text: '《React.js 小书》-核心概念1'})
+        store.dispatch({type: 'update_title_color', color: 'brown'})
+        
+    </script>
+  </body>
+</html>

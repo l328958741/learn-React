@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redux的基本原理1</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="title"></div>
+    <div id="content"></div>
+    <script type="text/babel">
+        function renderApp(newAppState, oldAppState={}) {
+            if(newAppState === oldAppState) return
+            renderTheme(newAppState, oldAppState)
+        }
+
+        function renderTheme(newTitle, oldTitle = {}){
+            if(newTitle === oldTitle) return
+            const oT = document.getElementById('title')
+            oT.innerHTML = newTitle.themeName
+            oT.style.color = newTitle.themeColor
+        }
+
+        function themeReducer(state, action){
+            if(!state){
+                return {
+                    themeName: 'Red Theme',
+                    themeColor: 'red'
+                }
+            }
+
+            switch(action.type){
+                case 'update_theme_name':
+                    return {
+                        ...state,
+                        themeName: action.name
+                    }
+                case 'update_theme_color':
+                    return {
+                        ...state,
+                        themeColor: action.color
+                    }
+                default:
+                    return state
+            }
+        }
+
+        function createStore(reducer){
+            let state = null
+            const listeners = []
+            const subscribe = (listener) => {
+                listeners.push(listener)
+            }
+            const getState = () => state
+            const dispatch = (action) => {
+                state = reducer(state, action)
+                listeners.forEach((listener) => listener())
+            }
+
+            dispatch({})
+
+            return { getState, dispatch, subscribe }
+        }
+
+        const store = createStore(themeReducer)
+        let oldState = store.getState()
+        store.subscribe(() => {
+            const newState = store.getState()
+            renderApp(newState, oldState)
+            oldState = newState
+        })
+
+        renderApp(store.getState())
+        // dispatch({type:'update_title_text', text: '《React.js 小书》'})
+        // dispatch({type: 'update_title_color', color: 'blue'})
+        store.dispatch({type:'update_theme_name', name: 'buxiangbuian'})
+        store.dispatch({type: 'update_theme_color', color: 'salmon'})
+        
+    </script>
+  </body>
+</html>

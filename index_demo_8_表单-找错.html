@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.bootcss.com/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.bootcss.com/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.26.0/babel.js"></script>
+  </head>
+  <body>
+    <div id="example"></div>
+    <script type="text/babel">
+        class FlavorForm extends React.Component {
+            constructor(...args) {
+                super(...args)
+                this.state = {value: 'coconut'}
+
+                this.handleChange = this.handleChange.bind(this)
+                this.handleSubmit = this.handleSubmit.bind(this)
+            }
+
+            handleChange(e){
+                this.setState({value: e.target.value})
+            }
+
+            handleSubmit(e){
+                alert('my selection: ' + this.state.value)
+                e.preventDefault();
+            }
+
+            render(){
+                return(
+                    <form onSubmit={this.handleSubmit}>
+                        Pick your Selection:
+                        <select value={this.state.value} onChange={this.handleChange}>
+                            <option value="grapefruit">grapefruit</option>
+                            <option value="lime">lime</option>
+                            <option value="grade">grade</option>
+                            <option value="mango">mango</option>
+                            <option value="coconut">coconut</option>
+                        </select>
+                        <input type="submit" value="Submit" />
+                    </form>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <FlavorForm />,
+            document.getElementById('example')
+        )
+    </script>
+  </body>
+</html>
